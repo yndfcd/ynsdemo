@@ -43,7 +43,8 @@ dependencies {
  testImplementation("org.robolectric:robolectric:4.12.2")
     testImplementation(libs.junit)
  testImplementation("io.mockk:mockk:1.13.11")
-    implementation(libs.kotlinx.coroutines.android)
+    testImplementation(libs.kotlinx.coroutines.test)
+    implementation(libs.kotlinx.coroutines.core)
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)

@@ -1,8 +1,6 @@
 package com.example.ynsdemo
 
-import com.example.ynsdemo.MainIntent
-import com.example.ynsdemo.MainState
-import com.example.ynsdemo.MainViewModel
+import MainViewModel
 import junit.framework.TestCase.assertEquals
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
