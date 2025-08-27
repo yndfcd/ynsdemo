@@ -1,11 +1,12 @@
 package com.example.ynsdemo
 
+import MainIntent
+import MainViewModel
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.Scaffold
@@ -26,14 +27,14 @@ import com.example.ynsdemo.ui.theme.YnsDemoTheme
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
- enableEdgeToEdge()
- setContent {
+        enableEdgeToEdge()
+        setContent {
             YnsDemoTheme {
                 val navController = rememberNavController()
- NavHost(navController = navController, startDestination = "main_screen") {
- composable("main_screen") {
+                NavHost(navController = navController, startDestination = "main_screen") {
+                    composable("main_screen") {
                         val viewModel: MainViewModel = viewModel()
- MainScreen(viewModel = viewModel)
+                        MainScreen(viewModel = viewModel)
                     }
                 }
             }
@@ -64,9 +65,9 @@ fun MainScreen(viewModel: MainViewModel) {
             onClick = { viewModel.processIntent(MainIntent.SayHello) },
             modifier = Modifier.padding(innerPadding).padding(top = 80.dp, start = 16.dp)
         ) {
- Text("Say Hello")
+            Text("Say Hello")
         }
- Text(text = state.greeting, modifier = Modifier.padding(innerPadding).padding(top = 140.dp, start = 16.dp))
+        Text(text = state.greeting, modifier = Modifier.padding(innerPadding).padding(top = 140.dp, start = 16.dp))
     }
 }
 
