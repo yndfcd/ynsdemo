@@ -6,7 +6,8 @@
 
   # Use https://search.nixos.org/packages to find packages
   packages = [
-    # pkgs.go
+    pkgs.jdk21
+    pkgs.gradle_8
     # pkgs.python311
     # pkgs.python311Packages.pip
     # pkgs.nodejs_20
