@@ -67,11 +67,7 @@ fun MainScreen() {
         },
         bottomBar =
             {
-                NavigationBar(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 8.dp)
-                ) {
+                NavigationBar {
                     tabs.forEach {
                         NavigationBarItem(
                             icon = { Icon(it.icon, contentDescription = null) },

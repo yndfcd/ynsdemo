@@ -57,19 +57,27 @@ class CartViewModel : ViewModel() {
         try {
             val response: NewCheckoutResponse =
                 client.get("https://checkout-api.iherbtest.biz/v2/ec/gasc?zipCode=92571&countryCode=US&keepSelectState=true") {
+                    headers.append("apiSeed",  "2")
+                    headers.append("Accept-Language", "en-US,en;q=0.8")
+                    headers.append("Platform", "android")
+                    headers.append("RegionType", "GLOBAL")
                     headers.append("AnonymousToken", "58e58f1a-7084-4db9-94f6-781bf443d9d7")
+                    headers.append("IH-Pref", "lc=en-US;cc=USD;ctc=US;wp=pounds")
+                    headers.append("Pref", "{\"ctc\":\"US\",\"crc\":\"USD\",\"crs\":\"2\",\"lac\":\"en-US\",\"pc\":\"92571\",\"storeid\":0,\"som\":\"pounds\"}")
+                    headers.append("AppV", "905")
+                    headers.append("User-Agent", "iHerbMobile/11.9.0905.905 (Android 11; google sdk_gphone_arm64; GLOBAL)")
                 }.body()
 
 
-            _shippingTotal.value = response.cart.shippingCost
-            val cartItems = response.cart.prodList.mapNotNull { product ->
+            _shippingTotal.value = response?.cart?.shippingCost ?: ""
+            val cartItems = response.cart?.prodList?.mapNotNull { product ->
                 try {
                     CartItem(
-                        id = product.productId.toString(),
-                        name = product.displayName,
-                        price = product.price,
-                        fontImg = product.frontImg,
-                        pid = product.pid
+                        id = product?.productId.toString(),
+                        name = product?.displayName ?: "",
+                        price = product?.price ?: 0.0,
+                        fontImg = product?.frontImg ?: "",
+                        pid = product?.pid ?: ""
                     )
                 } catch (e: SerializationException) {
                     println("Serialization Error for item: ${e.message}")
@@ -78,7 +86,7 @@ class CartViewModel : ViewModel() {
                 }
 
             }
-            _cartItems.value = cartItems
+            _cartItems.value = cartItems ?: emptyList()
         } catch (e: ResponseException) {
             // Handle HTTP response errors
             println("HTTP Error: ${e.response.status.value}")
@@ -116,24 +124,24 @@ class CartViewModel : ViewModel() {
 
 @Serializable
 data class NewCheckoutResponse(
-    val cart: Cart
+    val cart: Cart? = null
 )
 
 @Serializable
 data class Cart(
-    val shippingCost: String,
-    val prodList: List<NewProduct> = emptyList()
+    val shippingCost: String? = null,
+    val prodList: List<NewProduct?> = emptyList()
 )
 
 @Serializable
 data class NewProduct(
-    val productId: Int,
-    val pid: String,
-    val displayName: String,
-    val frontImg: String = "",
-    val prodQty: String,
-    val price: Double,
-    val lineItemErrors: List<String>? = emptyList()
+    val productId: Int? = null,
+    val pid: String? = null,
+    val displayName: String? = null,
+    val frontImg: String? = null,
+    val prodQty: String? = null,
+    val price: Double? = null,
+    val lineItemErrors: List<String?> = emptyList()
 
 )
 
