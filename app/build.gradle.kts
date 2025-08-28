@@ -40,13 +40,13 @@ android {
 }
 
 dependencies {
- testImplementation("org.robolectric:robolectric:4.12.2")
+    testImplementation("org.robolectric:robolectric:4.12.2")
     testImplementation(libs.junit)
- testImplementation("io.mockk:mockk:1.13.11")
+    testImplementation("io.mockk:mockk:1.13.11")
     testImplementation(libs.kotlinx.coroutines.test)
- implementation(libs.ktor.client.cio)
- implementation(libs.ktor.client.serialization)
- implementation(libs.ktor.client.content.negotiation)
+    implementation(libs.ktor.client.cio)
+    implementation(libs.ktor.serialization.kotlinx.json)
+    implementation(libs.ktor.client.content.negotiation)
 
     implementation(libs.ktor.client.core)
     implementation(libs.ktor.client.android)

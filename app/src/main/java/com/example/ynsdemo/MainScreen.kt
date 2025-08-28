@@ -2,10 +2,13 @@ package com.example.ynsdemo
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.filled.Home
@@ -64,7 +67,11 @@ fun MainScreen() {
         },
         bottomBar =
             {
-                NavigationBar {
+                NavigationBar(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 8.dp)
+                ) {
                     tabs.forEach {
                         NavigationBarItem(
                             icon = { Icon(it.icon, contentDescription = null) },
@@ -78,7 +85,9 @@ fun MainScreen() {
     ) { paddingValues ->
 
         NavHost(
-            modifier = Modifier.padding(paddingValues),
+            modifier = Modifier
+                .padding(paddingValues)
+                .fillMaxSize(),
             navController = navController,
             startDestination = "home"
         ) {
@@ -114,14 +123,13 @@ fun TopBarCommon(title: String = "IHerb",
     Box (
         Modifier
             .fillMaxWidth()
-            .height(48.dp)
+            .statusBarsPadding()
             .background(colorResource(R.color.iherb_green))
     ) {
         Box(
             Modifier
                 .fillMaxWidth()
                 .height(48.dp)
-                .background(colorResource(R.color.iherb_green))
         ) {
             Box(
                 Modifier

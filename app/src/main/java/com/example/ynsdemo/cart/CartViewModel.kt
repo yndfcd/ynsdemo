@@ -1,28 +1,33 @@
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.engine.cio.CIO
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.request.get
-import kotlinx.coroutines.flow.update
 import io.ktor.serialization.kotlinx.json.json
-import kotlinx.serialization.Serializable
-import kotlinx.serialization.json.Json
-import androidx.compose.runtime.mutableStateOf
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.serialization.Serializable
 import kotlinx.serialization.SerializationException
-data class CartItem(val id: String, val name: String, val price: Double, val fontImg: String, val pid: String)
-class CartViewModel {
+import kotlinx.serialization.json.Json
+
+data class CartItem(
+    val id: String,
+    val name: String,
+    val price: Double,
+    val fontImg: String,
+    val pid: String
+)
+
+class CartViewModel : ViewModel() {
 
     private val _cartItems = MutableStateFlow<List<CartItem>>(emptyList())
     val cartItems: StateFlow<List<CartItem>> = _cartItems
 
- private val _shippingTotal = MutableStateFlow<String>("Calculatng...")
+    private val _shippingTotal = MutableStateFlow<String>("Calculatng...")
     val shippingTotal: StateFlow<String> = _shippingTotal
 
     init {
@@ -30,7 +35,6 @@ class CartViewModel {
             fetchProducts()
         }
     }
-    
 
 
     private suspend fun fetchProducts() {
@@ -44,9 +48,10 @@ class CartViewModel {
             }
         }
         try {
-            val response: NewCheckoutResponse = client.get("https://checkout-api.iherbtest.biz/v2/ec/gasc?zipCode=92571&countryCode=US&keepSelectState=true") {
-                headers.append("AnonymousToken", "58e58f1a-7084-4db9-94f6-781bf443d9d7")
-            }.body()
+            val response: NewCheckoutResponse =
+                client.get("https://checkout-api.iherbtest.biz/v2/ec/gasc?zipCode=92571&countryCode=US&keepSelectState=true") {
+                    headers.append("AnonymousToken", "58e58f1a-7084-4db9-94f6-781bf443d9d7")
+                }.body()
 
 
             _shippingTotal.value = response.cart.shippingCost
@@ -65,7 +70,6 @@ class CartViewModel {
                     null // Skip this item if parsing fails
                 }
 
-                }
             }
             _cartItems.value = cartItems
         } catch (e: Exception) {
