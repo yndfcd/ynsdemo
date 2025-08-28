@@ -30,31 +30,15 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.ynsdemo.ui.theme.YnsDemoTheme
+
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
             YnsDemoTheme {
-                val navController = rememberNavController()
-                NavHost(navController = navController, startDestination = "main_screen") {
- MainScreen(viewModel = viewModel(), navController = navController)
- }
- }
-    }
-}
-
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    YnsDemoTheme {
-        Greeting("Android")
+                MainScreen()
+            }
+        }
     }
 }
