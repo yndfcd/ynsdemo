@@ -50,7 +50,7 @@ class CartViewModel : ViewModel() {
                 })
             }
             install(Logging) {
-                level = LogLevel.INFO
+                level = LogLevel.ALL
             }
             expectSuccess = false // Allow handling non-2xx responses
         }

@@ -49,6 +49,7 @@ dependencies {
     implementation(libs.ktor.serialization.kotlinx.json)
     implementation(libs.ktor.client.content.negotiation)
     implementation(libs.ktor.client.logging)
+    implementation("io.coil-kt:coil-compose:2.6.0")
     implementation("org.slf4j:slf4j-android:1.7.36")
 
     implementation(libs.ktor.client.core)
