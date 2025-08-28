@@ -5,6 +5,9 @@ import io.ktor.client.call.body
 import io.ktor.client.engine.cio.CIO
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.request.get
+import io.ktor.client.plugins.logging.LogLevel
+import io.ktor.client.plugins.logging.Logging
+import io.ktor.client.plugins.ResponseException
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -46,6 +49,10 @@ class CartViewModel : ViewModel() {
                     ignoreUnknownKeys = true
                 })
             }
+            install(Logging) {
+                level = LogLevel.INFO
+            }
+            expectSuccess = false // Allow handling non-2xx responses
         }
         try {
             val response: NewCheckoutResponse =
@@ -65,17 +72,27 @@ class CartViewModel : ViewModel() {
                         pid = product.pid
                     )
                 } catch (e: SerializationException) {
-                    // Log the error or handle it as needed
+                    println("Serialization Error for item: ${e.message}")
                     e.printStackTrace()
                     null // Skip this item if parsing fails
                 }
 
             }
             _cartItems.value = cartItems
+        } catch (e: ResponseException) {
+            // Handle HTTP response errors
+            println("HTTP Error: ${e.response.status.value}")
+            e.printStackTrace()
+            // You can access the error body here: e.response.body<String>()
+        } catch (e: SerializationException) {
+            // Handle serialization errors
+            println("Serialization Error: ${e.message}")
+            e.printStackTrace()
         } catch (e: Exception) {
-            // Handle exceptions, maybe log or show an error message
+            println("An unexpected error occurred: ${e.message}")
             e.printStackTrace()
         }
+        client.close()
     }
 
 
