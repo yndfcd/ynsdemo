@@ -17,16 +17,32 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.Json
 
+@Serializable
 data class CartItem(
-    val id: String,
-    val name: String,
-    val price: Double,
-    val fontImg: String,
-    val pid: String
+    val productId: Int? = null,
+ val pid: String? = null,
+    val displayName: String? = null,
+    val frontImg: String? = null,
+    val prodQty: String? = null,
+    val price: Double? = null,
+    val lineItemErrors: List<String?>? = emptyList(),
+    val productUrl: String? = null,
+    val isFeatured: Boolean? = null,
+    val rating: Double? = null,
+    val reviewCount: Int? = null,
+    val hasReview: Boolean? = null,
+    val isInStock: Boolean? = null,
+    val comingSoon: Boolean? = null,
+    val eta: String? = null,
+    val maxQty: Int? = null,
+    val availableQty: Int? = null,
+    val specialType: String? = null,
+    val specialText: String? = null,
+    val manufacturer: String? = null,
+    val manufacturerId: Int? = null,
+    val isShowWarning: Boolean? = null,
+    val countryOfOrigin: String? = null,
 )
-
-class CartViewModel : ViewModel() {
-
     private val _cartItems = MutableStateFlow<List<CartItem>>(emptyList())
     val cartItems: StateFlow<List<CartItem>> = _cartItems
 
@@ -69,10 +85,10 @@ class CartViewModel : ViewModel() {
                 }.body()
 
 
-            _shippingTotal.value = response?.cart?.shippingCost ?: ""
-            val cartItems = response.cart?.prodList?.mapNotNull { product ->
+            _shippingTotal.value = response.cart?.shippingCost ?: ""
+ val cartItems = response.cart?.prodList?.mapNotNull { product ->
                 try {
-                    CartItem(
+ CartItem(
                         id = product?.productId.toString(),
                         name = product?.displayName ?: "",
                         price = product?.price ?: 0.0,
@@ -86,7 +102,7 @@ class CartViewModel : ViewModel() {
                 }
 
             }
-            _cartItems.value = cartItems ?: emptyList()
+            _cartItems.value = cartItems.filterNotNull() // Filter out null items
         } catch (e: ResponseException) {
             // Handle HTTP response errors
             println("HTTP Error: ${e.response.status.value}")
@@ -128,23 +144,46 @@ data class NewCheckoutResponse(
 )
 
 @Serializable
-data class Cart(
-    val shippingCost: String? = null,
-    val prodList: List<NewProduct?> = emptyList()
-)
+data class Cart(val shippingCost: String? = null, val prodList: List<CartItem?> = emptyList())
 
 @Serializable
-data class NewProduct(
-    val productId: Int? = null,
-    val pid: String? = null,
-    val displayName: String? = null,
-    val frontImg: String? = null,
-    val prodQty: String? = null,
-    val price: Double? = null,
-    val lineItemErrors: List<String?> = emptyList()
-
+data class CartProduct(
+ val pid: String? = null,
+ val pn: String? = null,
+ val prodName: String? = null,
+ val displayName: String? = null,
+ val brandCode: String? = null,
+ val brandName: String? = null,
+ val frontImg: String? = null,
+ val retailPrice: String? = null,
+ val retailPriceRawAmount: Double? = null,
+ val listPrice: String? = null,
+ val listPriceRawAmount: Double? = null,
+ val listPricePostDiscount: String? = null,
+ val listPricePostDiscountRawAmount: Double? = null,
+ val discountMsgLst: List<String?>? = emptyList(),
+ val discountsAppliedLst: List<String?>? = emptyList(),
+ val lineItemErrors: List<String?>? = emptyList(),
+ val discountLabelList: List<String?>? = emptyList(),
+ val warningMessages: List<String?>? = emptyList(),
+ val prodQty: String? = null,
+ val shipWeightLbs: String? = null,
+ val originalPrice: String? = null,
+ val totalPrice: String? = null,
+ val totalPriceRawAmount: Double? = null,
+ val isAvailable: Boolean? = null,
+ val isDiscontinued: Boolean? = null,
+ val isOutOfStock: Boolean? = null,
+ val isRestricted: Boolean? = null,
+ val type1Activated: Boolean? = null,
+ val eligibleSimpleDiscountType: String? = null,
+ val storeId: Int? = null,
+ val prop65Message: String? = null,
+ val maxAvailableQuantity: Int? = null,
+ val selected: Boolean? = null,
+ val selectorDisabled: Boolean? = null,
+ val subscribable: Boolean? = null,
 )
-
 
 
 
