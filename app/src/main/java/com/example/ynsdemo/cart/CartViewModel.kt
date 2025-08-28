@@ -17,34 +17,18 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.Json
 
-@Serializable
-data class CartItem(
-    val productId: Int? = null,
- val pid: String? = null,
-    val displayName: String? = null,
-    val frontImg: String? = null,
-    val prodQty: String? = null,
-    val price: Double? = null,
-    val lineItemErrors: List<String?>? = emptyList(),
-    val productUrl: String? = null,
-    val isFeatured: Boolean? = null,
-    val rating: Double? = null,
-    val reviewCount: Int? = null,
-    val hasReview: Boolean? = null,
-    val isInStock: Boolean? = null,
-    val comingSoon: Boolean? = null,
-    val eta: String? = null,
-    val maxQty: Int? = null,
-    val availableQty: Int? = null,
-    val specialType: String? = null,
-    val specialText: String? = null,
-    val manufacturer: String? = null,
-    val manufacturerId: Int? = null,
-    val isShowWarning: Boolean? = null,
-    val countryOfOrigin: String? = null,
+class CartProduct(
+    private val lineItem: LineItem? = null,
+    val id: String = lineItem?.pid ?: "",
+    val image: String = lineItem?.frontImg ?: "",
+    val description: String = lineItem?.displayName ?: "",
+    val unitPrice: String = lineItem?.listPricePostDiscount ?: "",
+    val quantity: Int = lineItem?.prodQty?.toIntOrNull() ?: 0
 )
-    private val _cartItems = MutableStateFlow<List<CartItem>>(emptyList())
-    val cartItems: StateFlow<List<CartItem>> = _cartItems
+
+class CartViewModel : ViewModel() {
+    private val _cartItems = MutableStateFlow<List<CartProduct>>(emptyList())
+    val cartItems: StateFlow<List<CartProduct>> = _cartItems
 
     private val _shippingTotal = MutableStateFlow<String>("Calculatng...")
     val shippingTotal: StateFlow<String> = _shippingTotal
@@ -73,28 +57,28 @@ data class CartItem(
         try {
             val response: NewCheckoutResponse =
                 client.get("https://checkout-api.iherbtest.biz/v2/ec/gasc?zipCode=92571&countryCode=US&keepSelectState=true") {
-                    headers.append("apiSeed",  "2")
+                    headers.append("apiSeed", "2")
                     headers.append("Accept-Language", "en-US,en;q=0.8")
                     headers.append("Platform", "android")
                     headers.append("RegionType", "GLOBAL")
                     headers.append("AnonymousToken", "58e58f1a-7084-4db9-94f6-781bf443d9d7")
                     headers.append("IH-Pref", "lc=en-US;cc=USD;ctc=US;wp=pounds")
-                    headers.append("Pref", "{\"ctc\":\"US\",\"crc\":\"USD\",\"crs\":\"2\",\"lac\":\"en-US\",\"pc\":\"92571\",\"storeid\":0,\"som\":\"pounds\"}")
+                    headers.append(
+                        "Pref",
+                        "{\"ctc\":\"US\",\"crc\":\"USD\",\"crs\":\"2\",\"lac\":\"en-US\",\"pc\":\"92571\",\"storeid\":0,\"som\":\"pounds\"}"
+                    )
                     headers.append("AppV", "905")
-                    headers.append("User-Agent", "iHerbMobile/11.9.0905.905 (Android 11; google sdk_gphone_arm64; GLOBAL)")
+                    headers.append(
+                        "User-Agent",
+                        "iHerbMobile/11.9.0905.905 (Android 11; google sdk_gphone_arm64; GLOBAL)"
+                    )
                 }.body()
 
 
             _shippingTotal.value = response.cart?.shippingCost ?: ""
- val cartItems = response.cart?.prodList?.mapNotNull { product ->
+            val cartItems = response.cart?.prodList?.filterNotNull()?.mapNotNull { product ->
                 try {
- CartItem(
-                        id = product?.productId.toString(),
-                        name = product?.displayName ?: "",
-                        price = product?.price ?: 0.0,
-                        fontImg = product?.frontImg ?: "",
-                        pid = product?.pid ?: ""
-                    )
+                    CartProduct(product)
                 } catch (e: SerializationException) {
                     println("Serialization Error for item: ${e.message}")
                     e.printStackTrace()
@@ -102,7 +86,7 @@ data class CartItem(
                 }
 
             }
-            _cartItems.value = cartItems.filterNotNull() // Filter out null items
+            _cartItems.value = cartItems ?: emptyList()
         } catch (e: ResponseException) {
             // Handle HTTP response errors
             println("HTTP Error: ${e.response.status.value}")
@@ -118,23 +102,6 @@ data class CartItem(
         }
         client.close()
     }
-
-
-    fun addItem(item: CartItem) {
-        _cartItems.update { currentItems ->
-            currentItems + item
-        }
-    }
-
-    fun removeItem(item: CartItem) {
-        _cartItems.update { currentItems ->
-            currentItems.filterNot { it.id == item.id }
-        }
-    }
-
-    fun clearCart() {
-        _cartItems.value = emptyList()
-    }
 }
 
 
@@ -144,45 +111,45 @@ data class NewCheckoutResponse(
 )
 
 @Serializable
-data class Cart(val shippingCost: String? = null, val prodList: List<CartItem?> = emptyList())
+data class Cart(val shippingCost: String? = null, val prodList: List<LineItem?> = emptyList())
 
 @Serializable
-data class CartProduct(
- val pid: String? = null,
- val pn: String? = null,
- val prodName: String? = null,
- val displayName: String? = null,
- val brandCode: String? = null,
- val brandName: String? = null,
- val frontImg: String? = null,
- val retailPrice: String? = null,
- val retailPriceRawAmount: Double? = null,
- val listPrice: String? = null,
- val listPriceRawAmount: Double? = null,
- val listPricePostDiscount: String? = null,
- val listPricePostDiscountRawAmount: Double? = null,
- val discountMsgLst: List<String?>? = emptyList(),
- val discountsAppliedLst: List<String?>? = emptyList(),
- val lineItemErrors: List<String?>? = emptyList(),
- val discountLabelList: List<String?>? = emptyList(),
- val warningMessages: List<String?>? = emptyList(),
- val prodQty: String? = null,
- val shipWeightLbs: String? = null,
- val originalPrice: String? = null,
- val totalPrice: String? = null,
- val totalPriceRawAmount: Double? = null,
- val isAvailable: Boolean? = null,
- val isDiscontinued: Boolean? = null,
- val isOutOfStock: Boolean? = null,
- val isRestricted: Boolean? = null,
- val type1Activated: Boolean? = null,
- val eligibleSimpleDiscountType: String? = null,
- val storeId: Int? = null,
- val prop65Message: String? = null,
- val maxAvailableQuantity: Int? = null,
- val selected: Boolean? = null,
- val selectorDisabled: Boolean? = null,
- val subscribable: Boolean? = null,
+data class LineItem(
+    val pid: String? = null,
+    val pn: String? = null,
+    val prodName: String? = null,
+    val displayName: String? = null,
+    val brandCode: String? = null,
+    val brandName: String? = null,
+    val frontImg: String? = null,
+    val retailPrice: String? = null,
+    val retailPriceRawAmount: Double? = null,
+    val listPrice: String? = null,
+    val listPriceRawAmount: Double? = null,
+    val listPricePostDiscount: String? = null,
+    val listPricePostDiscountRawAmount: Double? = null,
+    val discountMsgLst: List<String?>? = emptyList(),
+    val discountsAppliedLst: List<String?>? = emptyList(),
+    val lineItemErrors: List<String?>? = emptyList(),
+    val discountLabelList: List<String?>? = emptyList(),
+    val warningMessages: List<String?>? = emptyList(),
+    val prodQty: String? = null,
+    val shipWeightLbs: String? = null,
+    val originalPrice: String? = null,
+    val totalPrice: String? = null,
+    val totalPriceRawAmount: Double? = null,
+    val isAvailable: Boolean? = null,
+    val isDiscontinued: Boolean? = null,
+    val isOutOfStock: Boolean? = null,
+    val isRestricted: Boolean? = null,
+    val type1Activated: Boolean? = null,
+    val eligibleSimpleDiscountType: String? = null,
+    val storeId: Int? = null,
+    val prop65Message: String? = null,
+    val maxAvailableQuantity: Int? = null,
+    val selected: Boolean? = null,
+    val selectorDisabled: Boolean? = null,
+    val subscribable: Boolean? = null,
 )
 
 

@@ -1,6 +1,6 @@
 package com.example.ynsdemo.cart
 
-import CartItem
+import CartProduct
 import CartViewModel
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -62,7 +62,7 @@ fun CartScreen() {
 }
 
 @Composable
-fun CartItem(item: CartItem) {
+fun CartItem(item: CartProduct) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -74,15 +74,15 @@ fun CartItem(item: CartItem) {
         verticalAlignment = Alignment.CenterVertically
     ) {
         AsyncImage(
-            model = item.fontImg,
-            contentDescription = item.name,
+            model = item.image,
+            contentDescription = item.description,
             modifier = Modifier.size(64.dp),
             contentScale = ContentScale.Fit
         )
         Spacer(modifier = Modifier.width(8.dp))
         Column {
-            Text(item.name)
-            Text("Price: ${item.price}")
+            Text(item.description)
+            Text("Price: ${item.unitPrice}")
         }
     }
 }
@@ -91,6 +91,6 @@ fun CartItem(item: CartItem) {
 @Composable
 fun PreviewCartItem() {
     CartItem(
-        CartItem("", "Vitamin", 270.0, "", "")
+        CartProduct(null, "", "Vitamin", "270.0", "")
     )
 }
