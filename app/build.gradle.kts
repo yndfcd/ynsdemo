@@ -44,6 +44,10 @@ dependencies {
     testImplementation(libs.junit)
  testImplementation("io.mockk:mockk:1.13.11")
     testImplementation(libs.kotlinx.coroutines.test)
+ implementation(libs.ktor.client.serialization)
+
+    implementation(libs.ktor.client.core)
+    implementation(libs.ktor.client.android)
     implementation(libs.kotlinx.coroutines.core)
 
     implementation(libs.androidx.core.ktx)
