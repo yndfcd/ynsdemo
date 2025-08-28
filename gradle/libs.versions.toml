@@ -31,6 +31,7 @@ androidx-material3 = { group = "androidx.compose.material3", name = "material3" 
 androidx-navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigationCompose" }
 kotlinx-coroutines-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version.ref = "kotlinCoroutines" }
 ktor-client-core = { group = "io.ktor", name = "ktor-client-core", version.ref = "ktorVersion" }
+ktor-client-cio = { group = "io.ktor", name = "ktor-client-cio", version.ref = "ktorVersion" }
 ktor-client-android = { group = "io.ktor", name = "ktor-client-android", version.ref = "ktorVersion" }
 ktor-serialization-kotlinx-json = { group = "io.ktor", name = "ktor-serialization-kotlinx-json", version.ref = "ktorVersion" }
 kotlinx-coroutines-core = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version.ref = "kotlinCoroutines" }
