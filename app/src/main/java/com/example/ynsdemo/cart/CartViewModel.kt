@@ -33,6 +33,9 @@ class CartViewModel : ViewModel() {
     private val _shippingTotal = MutableStateFlow<String>("Calculatng...")
     val shippingTotal: StateFlow<String> = _shippingTotal
 
+    private val _totalItems = MutableStateFlow<Int>(0)
+    val totalItems: StateFlow<Int> = _totalItems
+
     init {
         viewModelScope.launch {
             fetchProducts()
@@ -75,16 +78,8 @@ class CartViewModel : ViewModel() {
                 }.body()
 
 
-            _shippingTotal.value = response.cart?.shippingCost ?: ""
+            _shippingTotal.value = response.cart?.shippingCost ?: "N/A"
             val cartItems = response.cart?.prodList?.filterNotNull()?.mapNotNull { product ->
-                try {
-                    CartProduct(product)
-                } catch (e: SerializationException) {
-                    println("Serialization Error for item: ${e.message}")
-                    e.printStackTrace()
-                    null // Skip this item if parsing fails
-                }
-
             }
             _cartItems.value = cartItems ?: emptyList()
         } catch (e: ResponseException) {
@@ -101,6 +96,12 @@ class CartViewModel : ViewModel() {
             e.printStackTrace()
         }
         client.close()
+    }
+
+    init {
+        viewModelScope.launch {
+            _cartItems.collect { items -> _totalItems.value = items.fold(0) { accumulator, item -> accumulator + item.quantity } }
+        }
     }
 }
 

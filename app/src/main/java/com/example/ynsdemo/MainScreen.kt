@@ -35,9 +35,12 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.ynsdemo.cart.CartScreen
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.ynsdemo.HomeViewModel
 
 data class HomeTab(
     val icon: ImageVector,
@@ -56,13 +59,11 @@ val tabs = listOf(
 @Composable
 fun MainScreen() {
     val navController = rememberNavController()
-    val state by navController
-        .currentBackStackEntryFlow
-        .collectAsState(navController.currentBackStackEntry)
+    val currentDestination by navController.currentBackStackEntryAsState()
 
     Scaffold(
         topBar = {
-            tabs.find { it.route == state?.destination?.route }?.let {
+            tabs.find { it.route == currentDestination?.destination?.route }?.let {
                 TopBarCommon(it.label)
             }
 
@@ -74,7 +75,7 @@ fun MainScreen() {
                         NavigationBarItem(
                             icon = { Icon(it.icon, contentDescription = null) },
                             label = { Text(it.label, maxLines = 1) },
-                            selected = state?.destination?.route == it.route,
+                            selected = currentDestination?.destination?.route == it.route,
                             onClick = { navController.navigate(it.route) }
                         )
                     }
@@ -90,8 +91,7 @@ fun MainScreen() {
             startDestination = "home"
         ) {
             composable("home") {
-                // Content for the Home screen
-                Text("Home Screen")
+                HomeScreen()
             }
             composable("search") {
                 // Content for the Search screen
