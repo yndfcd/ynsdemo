@@ -35,8 +35,7 @@ fun CartScreen() {
     val cartViewModel: CartViewModel = viewModel()
     val cartItems by cartViewModel.cartItems.collectAsState()
     Column(modifier = Modifier.fillMaxSize()) {
-        Text("Cart Screen")
-        Text("Items:")
+        Text("Items: ${cartViewModel.totalItems.collectAsState().value}")
         LazyColumn(
             modifier = Modifier
                 .fillMaxWidth()
@@ -55,7 +54,7 @@ fun CartScreen() {
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Text("Total: $0.00") // Placeholder for total price
+            Text("Total: ${cartViewModel.totalAmount.collectAsState().value}") // Placeholder for total price
             Button(onClick = { /* TODO: Implement checkout logic */ }) { Text("Checkout") }
         }
     }
@@ -83,6 +82,8 @@ fun CartItem(item: CartProduct) {
         Column {
             Text(item.description)
             Text("Price: ${item.unitPrice}")
+
+            Text("X${item.quantity}")
         }
     }
 }
