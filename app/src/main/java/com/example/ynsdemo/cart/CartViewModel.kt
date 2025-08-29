@@ -11,7 +11,6 @@ import io.ktor.client.plugins.ResponseException
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.SerializationException
@@ -30,8 +29,8 @@ class CartViewModel : ViewModel() {
     private val _cartItems = MutableStateFlow<List<CartProduct>>(emptyList())
     val cartItems: StateFlow<List<CartProduct>> = _cartItems
 
-    private val _shippingTotal = MutableStateFlow<String>("Calculatng...")
-    val shippingTotal: StateFlow<String> = _shippingTotal
+    private val _totalAmount = MutableStateFlow<String>("Calculatng...")
+    val totalAmount: StateFlow<String> = _totalAmount
 
     private val _totalItems = MutableStateFlow<Int>(0)
     val totalItems: StateFlow<Int> = _totalItems
@@ -78,10 +77,13 @@ class CartViewModel : ViewModel() {
                 }.body()
 
 
-            _shippingTotal.value = response.cart?.shippingCost ?: "N/A"
+            _totalAmount.value = response.cart?.orderTotal ?: "--.--"
             val cartItems = response.cart?.prodList?.filterNotNull()?.mapNotNull { product ->
-            }
-            _cartItems.value = cartItems ?: emptyList()
+                CartProduct(product)
+            } ?: emptyList()
+            _cartItems.value = cartItems
+
+            _totalItems.value = _cartItems.value.fold(0) { acc, item -> acc + item.quantity }
         } catch (e: ResponseException) {
             // Handle HTTP response errors
             println("HTTP Error: ${e.response.status.value}")
@@ -112,7 +114,11 @@ data class NewCheckoutResponse(
 )
 
 @Serializable
-data class Cart(val shippingCost: String? = null, val prodList: List<LineItem?> = emptyList())
+data class Cart(
+    val shippingCost: String? = null,
+    val orderTotal: String? = null,
+    val prodList: List<LineItem?> = emptyList()
+)
 
 @Serializable
 data class LineItem(
