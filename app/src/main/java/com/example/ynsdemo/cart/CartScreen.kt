@@ -76,7 +76,7 @@ fun CartItem(item: CartProduct) {
         AsyncImage(
             model = item.image,
             contentDescription = item.description,
-            modifier = Modifier.size(64.dp),
+            modifier = Modifier.size(128.dp),
             contentScale = ContentScale.Fit
         )
         Spacer(modifier = Modifier.width(8.dp))
