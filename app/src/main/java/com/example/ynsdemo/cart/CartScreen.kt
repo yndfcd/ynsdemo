@@ -30,6 +30,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 
@@ -42,12 +43,6 @@ fun CartScreen() {
             .fillMaxSize()
             .padding(16.dp)
     ) {
-        Text(
-            text = "Your Cart",
-            fontSize = androidx.compose.ui.unit.sp(24),
-            fontWeight = FontWeight.Bold,
-            modifier = Modifier.align(Alignment.CenterHorizontally).padding(bottom = 16.dp)
-        )
         LazyColumn(
             modifier = Modifier
                 .fillMaxWidth()
@@ -61,13 +56,17 @@ fun CartScreen() {
 
         Row(
             modifier = Modifier
+                .padding(top = 16.dp)
                 .fillMaxWidth()
-                .height(64.dp),
+                .height(32.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.padding(top = 16.dp)
         ) {
-            Text("Total: $0.00", fontWeight = FontWeight.Bold) // Placeholder for total price
+            Column {
+                Text(text = "${cartViewModel.totalItems.collectAsState().value} item(s)")
+                Text("Total: ${cartViewModel.totalAmount.collectAsState().value}, fontWeight = FontWeight.Bold)
+            }
+
             Button(
                 onClick = { /* TODO: Implement checkout logic */ },
                 shape = RoundedCornerShape(8.dp)
@@ -83,9 +82,9 @@ fun CartItem(item: CartProduct) {
             .fillMaxWidth()
             .shadow(elevation = 4.dp, shape = RoundedCornerShape(8.dp))
             .background(
-                color = Color(0xFFEEEEEE), // Slightly different shade of gray
+                color = Color.LightGray, // Slightly different shade of gray
                 shape = RoundedCornerShape(8.dp)
-            ).
+            )
             .padding(8.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -97,10 +96,10 @@ fun CartItem(item: CartProduct) {
         )
         Spacer(modifier = Modifier.width(8.dp))
         Column {
-            Text(item.description)
-            Text("Price: ${item.unitPrice}")
+            Text(item.description, color = Color.Black)
+            Text("Price: ${item.unitPrice}", color = Color.Black)
 
-            Text("X${item.quantity}")
+            Text("X${item.quantity}", color = Color.Black)
         }
     }
 }
