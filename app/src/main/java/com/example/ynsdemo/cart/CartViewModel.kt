@@ -2,19 +2,13 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
-import io.ktor.client.engine.cio.CIO
-import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.request.get
-import io.ktor.client.plugins.logging.LogLevel
-import io.ktor.client.plugins.logging.Logging
 import io.ktor.client.plugins.ResponseException
-import io.ktor.serialization.kotlinx.json.json
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.SerializationException
-import kotlinx.serialization.json.Json
 
 class CartProduct(
     private val lineItem: LineItem? = null,
@@ -25,7 +19,7 @@ class CartProduct(
     val quantity: Int = lineItem?.prodQty?.toIntOrNull() ?: 0
 )
 
-class CartViewModel : ViewModel() {
+class CartViewModel(private val client: HttpClient) : ViewModel() {
     private val _cartItems = MutableStateFlow<List<CartProduct>>(emptyList())
     val cartItems: StateFlow<List<CartProduct>> = _cartItems
 
@@ -43,19 +37,6 @@ class CartViewModel : ViewModel() {
 
 
     private suspend fun fetchProducts() {
-
-
-        val client = HttpClient(CIO) {
-            install(ContentNegotiation) {
-                json(Json {
-                    ignoreUnknownKeys = true
-                })
-            }
-            install(Logging) {
-                level = LogLevel.ALL
-            }
-            expectSuccess = false // Allow handling non-2xx responses
-        }
         try {
             val response: NewCheckoutResponse =
                 client.get("https://checkout-api.iherbtest.biz/v2/ec/gasc?zipCode=92571&countryCode=US&keepSelectState=true") {
@@ -67,7 +48,7 @@ class CartViewModel : ViewModel() {
                     headers.append("IH-Pref", "lc=en-US;cc=USD;ctc=US;wp=pounds")
                     headers.append(
                         "Pref",
-                        "{\"ctc\":\"US\",\"crc\":\"USD\",\"crs\":\"2\",\"lac\":\"en-US\",\"pc\":\"92571\",\"storeid\":0,\"som\":\"pounds\"}"
+                        "{"ctc":"US","crc":"USD","crs":"2","lac":"en-US","pc":"92571","storeid":0,"som":"pounds"}"
                     )
                     headers.append("AppV", "905")
                     headers.append(
@@ -97,7 +78,6 @@ class CartViewModel : ViewModel() {
             println("An unexpected error occurred: ${e.message}")
             e.printStackTrace()
         }
-        client.close()
     }
 
     init {
@@ -158,7 +138,3 @@ data class LineItem(
     val selectorDisabled: Boolean? = null,
     val subscribable: Boolean? = null,
 )
-
-
-
-
