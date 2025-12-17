@@ -39,23 +39,7 @@ class CartViewModel(private val client: HttpClient) : ViewModel() {
     private suspend fun fetchProducts() {
         try {
             val response: NewCheckoutResponse =
-                client.get("https://checkout-api.iherbtest.biz/v2/ec/gasc?zipCode=92571&countryCode=US&keepSelectState=true") {
-                    headers.append("apiSeed", "2")
-                    headers.append("Accept-Language", "en-US,en;q=0.8")
-                    headers.append("Platform", "android")
-                    headers.append("RegionType", "GLOBAL")
-                    headers.append("AnonymousToken", "58e58f1a-7084-4db9-94f6-781bf443d9d7")
-                    headers.append("IH-Pref", "lc=en-US;cc=USD;ctc=US;wp=pounds")
-                    headers.append(
-                        "Pref",
-                        "{"ctc":"US","crc":"USD","crs":"2","lac":"en-US","pc":"92571","storeid":0,"som":"pounds"}"
-                    )
-                    headers.append("AppV", "905")
-                    headers.append(
-                        "User-Agent",
-                        "iHerbMobile/11.9.0905.905 (Android 11; google sdk_gphone_arm64; GLOBAL)"
-                    )
-                }.body()
+                client.get("https://checkout-api.iherbtest.biz/v2/ec/gasc?zipCode=92571&countryCode=US&keepSelectState=true").body()
 
 
             _totalAmount.value = response.cart?.orderTotal ?: "--.--"
